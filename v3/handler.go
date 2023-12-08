@@ -61,6 +61,9 @@ func (g *gzipHandler) Handle(c *gin.Context) {
 			UncompressedRequests.Click(1)
 			UncompressedBytes.Click(bl)
 		}
+	}
+
+	if !g.shouldCompress(c.Request) {
 		return
 	}
 
