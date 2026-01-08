@@ -10,19 +10,18 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/elephant-insurance/go-microservice-arch/v3/clicker"
 	"github.com/gin-gonic/gin"
 )
 
 var (
 	// CompressedBytes counts the bytes of compressed requests before decompression
-	CompressedBytes = &clicker.Clicker{}
+	CompressedBytes = newClicker()
 	// DecompressedBytes counts the bytes of compressed requests after decompression
-	DecompressedBytes = &clicker.Clicker{}
+	DecompressedBytes = newClicker()
 	// UncompressedBytes counts the bytes of uncompressed requests
-	UncompressedBytes    = &clicker.Clicker{}
-	CompressedRequests   = &clicker.Clicker{}
-	UncompressedRequests = &clicker.Clicker{}
+	UncompressedBytes    = newClicker()
+	CompressedRequests   = newClicker()
+	UncompressedRequests = newClicker()
 )
 
 type gzipHandler struct {
@@ -52,14 +51,14 @@ func newGzipHandler(level int, options ...Option) *gzipHandler {
 func (g *gzipHandler) Handle(c *gin.Context) {
 	if fn := g.DecompressFn; fn != nil && g.shouldDecompress(c) {
 		before, after := fn(c)
-		CompressedRequests.Click(1)
-		CompressedBytes.Click(before)
-		DecompressedBytes.Click(after)
+		CompressedRequests.Click()
+		CompressedBytes.Add(before)
+		DecompressedBytes.Add(after)
 	} else {
 		cls := c.Request.Header.Get("Content-Length")
 		if bl, _ := strconv.Atoi(cls); bl > 0 {
-			UncompressedRequests.Click(1)
-			UncompressedBytes.Click(bl)
+			UncompressedRequests.Click()
+			UncompressedBytes.Add(bl)
 		}
 	}
 
