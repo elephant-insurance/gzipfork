@@ -1,0 +1,3 @@
+# Elephant Go rule catalog settings (go-microservice-arch ele-go plugin).
+# gzipfork is a patched fork of an outside package: it only has to pass its unit tests.
+kind: fork
